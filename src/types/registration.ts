@@ -10,6 +10,7 @@ export interface ApplicantInfo {
   preferredClubName: string;
   profileImage?: string;
   schoolType: string;
+  ghanaCardImage?: string;
 }
 
 export interface MembershipInfo {
@@ -21,6 +22,8 @@ export interface MembershipInfo {
   honorsEarned: string;
   hasFullDressUniform: boolean;
   hasFullFieldUniform: boolean;
+  membershipCategory: string;
+  certificateImage?: string;
 }
 
 export interface GuardianInfo {
@@ -61,6 +64,16 @@ export const PATHFINDER_CLASSES = [
   'Ranger',
   'Voyager',
   'Guide',
+  'Pioneer',
+  'Pathfinder',
+  'Ambassador',
+  'Master Guide',
+] as const;
+
+export const MEMBERSHIP_CATEGORIES = [
+  'Pathfinder',
+  'Senior Youth',
+  'Master Guide',
 ] as const;
 
 export const ASSISTANCE_AREAS = [

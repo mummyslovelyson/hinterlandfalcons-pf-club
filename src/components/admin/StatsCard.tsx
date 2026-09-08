@@ -1,10 +1,10 @@
-import { LucideIcon } from 'lucide-react';
+import { isValidElement, type ComponentType, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 interface StatsCardProps {
   title: string;
   value: number | string;
-  icon: LucideIcon;
+  icon?: ComponentType<{ className?: string }> | ReactNode;
   description?: string;
   trend?: {
     value: number;
@@ -13,55 +13,38 @@ interface StatsCardProps {
   variant?: 'default' | 'primary' | 'accent' | 'success';
 }
 
-const variantStyles = {
-  default: 'bg-card border-border',
-  primary: 'bg-primary/5 border-primary/20',
-  accent: 'bg-accent/10 border-accent/20',
-  success: 'bg-forest/5 border-forest/20',
-};
-
-const iconStyles = {
-  default: 'bg-muted text-muted-foreground',
-  primary: 'bg-primary/10 text-primary',
-  accent: 'bg-accent/20 text-accent',
-  success: 'bg-forest/10 text-forest',
-};
-
 const StatsCard = ({ 
   title, 
   value, 
-  icon: Icon, 
+  icon: Icon,
   description, 
   trend,
-  variant = 'default' 
 }: StatsCardProps) => {
   return (
-    <div className={cn(
-      'rounded-xl border p-6 shadow-soft transition-all duration-200 hover:shadow-card',
-      variantStyles[variant]
-    )}>
-      <div className="flex items-start justify-between mb-4">
-        <div className={cn(
-          'flex h-12 w-12 items-center justify-center rounded-lg',
-          iconStyles[variant]
-        )}>
-          <Icon className="h-6 w-6" />
+    <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6 transition-colors hover:border-slate-300">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{title}</p>
+        <div className="flex items-center gap-2">
+          {trend ? (
+            <span className={cn(
+              'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium',
+              trend.isPositive ? 'bg-slate-100 text-slate-700' : 'bg-slate-100 text-slate-600'
+            )}>
+              {trend.isPositive ? '↑ +' : '↓ -'}{trend.value}%
+            </span>
+          ) : null}
+          {Icon ? (
+            <div className="h-7 w-7 rounded-md bg-slate-100 flex items-center justify-center text-slate-600">
+              {isValidElement(Icon) ? Icon : typeof Icon === 'function' ? <Icon className="h-4 w-4" /> : null}
+            </div>
+          ) : null}
         </div>
-        {trend && (
-          <div className={cn(
-            'text-sm font-medium',
-            trend.isPositive ? 'text-forest' : 'text-destructive'
-          )}>
-            {trend.isPositive ? '+' : ''}{trend.value}%
-          </div>
-        )}
       </div>
       
       <div>
-        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-        <p className="font-heading text-3xl font-bold text-foreground mt-1">{value}</p>
+        <p className="font-heading text-3xl font-bold text-slate-900 tracking-tight">{value}</p>
         {description && (
-          <p className="text-sm text-muted-foreground mt-1">{description}</p>
+          <p className="text-xs text-slate-500 mt-1.5">{description}</p>
         )}
       </div>
     </div>
@@ -69,3 +52,4 @@ const StatsCard = ({
 };
 
 export default StatsCard;
+

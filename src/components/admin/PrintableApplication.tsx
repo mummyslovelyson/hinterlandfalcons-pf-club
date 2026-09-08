@@ -1,7 +1,6 @@
 import { forwardRef } from 'react';
 import { Registration, PATHFINDER_CLASSES } from '@/types/registration';
 import { cn } from '@/lib/utils';
-import { CheckCircle2, Square } from 'lucide-react';
 
 interface PrintableApplicationProps {
     application: Registration;
@@ -30,9 +29,8 @@ const PrintableApplication = forwardRef<HTMLDivElement, PrintableApplicationProp
                 {/* Header */}
                 <div className="flex items-center justify-between border-b-2 border-primary pb-6 mb-8">
                     <div className="flex items-center gap-4">
-                        {/* Logo Placeholder - assuming local asset or text if no logo file */}
-                        <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary">
-                            <span className="font-bold text-2xl text-primary">PF</span>
+                        <div className="h-16 w-16 rounded-full overflow-hidden border border-slate-300 flex items-center justify-center">
+                            <img src="/falcons-logo.png" alt="Falcons Crest" className="h-full w-full object-cover" />
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold uppercase tracking-wide">Santasi SDA Pathfinder Club</h1>
@@ -110,22 +108,36 @@ const PrintableApplication = forwardRef<HTMLDivElement, PrintableApplicationProp
                 {/* Membership Info */}
                 <div className="mb-8">
                     <h2 className="text-sm font-bold uppercase text-primary mb-4 border-b border-primary pb-2">Membership Information</h2>
+
+                    {/* Membership Category */}
+                    {application.membership.membershipCategory && (
+                        <div className="mb-4">
+                            <span className="block text-xs uppercase text-gray-500 font-semibold mb-1">Membership Category</span>
+                            <div className="inline-block border border-primary bg-primary/5 px-3 py-1 rounded font-medium text-sm">
+                                {application.membership.membershipCategory}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <p className="text-xs uppercase text-gray-500 font-semibold mb-2">Completed Classes</p>
                             <div className="flex flex-wrap gap-2">
-                                {PATHFINDER_CLASSES.map(cls => (
-                                    <div key={cls} className="flex items-center gap-2 text-sm">
-                                        {application.membership.completedClasses.includes(cls) ? (
-                                            <CheckCircle2 className="h-4 w-4 text-black" />
-                                        ) : (
-                                            <Square className="h-4 w-4 text-gray-300" />
-                                        )}
-                                        <span className={cn(application.membership.completedClasses.includes(cls) ? "font-medium" : "text-gray-400")}>
-                                            {cls}
-                                        </span>
-                                    </div>
-                                ))}
+                                {PATHFINDER_CLASSES.map(cls => {
+                                    const isDone = Array.isArray(application.membership?.completedClasses) && application.membership.completedClasses.includes(cls);
+                                    return (
+                                        <div key={cls} className="flex items-center gap-2 text-sm">
+                                            {isDone ? (
+                                                <span className="font-bold text-sm leading-none">☑</span>
+                                            ) : (
+                                                <span className="text-gray-400 text-sm leading-none">☐</span>
+                                            )}
+                                            <span className={cn(isDone ? "font-medium" : "text-gray-400")}>
+                                                {cls}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -146,6 +158,34 @@ const PrintableApplication = forwardRef<HTMLDivElement, PrintableApplicationProp
                             </div>
                         </div>
                     </div>
+
+                    {/* Certificate and Ghana Card */}
+                    {(application.membership.certificateImage || application.applicant.ghanaCardImage) && (
+                        <div className="grid grid-cols-2 gap-6 mt-6 pt-4 border-t border-gray-200">
+                            {application.membership.certificateImage && (
+                                <div>
+                                    <span className="block text-xs uppercase text-gray-500 font-semibold mb-2">
+                                        {application.membership.membershipCategory} Certificate
+                                    </span>
+                                    <img
+                                        src={application.membership.certificateImage}
+                                        alt="Certificate"
+                                        className="w-full max-h-40 object-contain border border-gray-300 rounded"
+                                    />
+                                </div>
+                            )}
+                            {application.applicant.ghanaCardImage && (
+                                <div>
+                                    <span className="block text-xs uppercase text-gray-500 font-semibold mb-2">Ghana Card</span>
+                                    <img
+                                        src={application.applicant.ghanaCardImage}
+                                        alt="Ghana Card"
+                                        className="w-full max-h-40 object-contain border border-gray-300 rounded"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Guardian Info */}

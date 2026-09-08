@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -14,8 +15,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Open Sans", "sans-serif"],
-        heading: ["Montserrat", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+        heading: ["Inter", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -55,15 +56,30 @@ export default {
           DEFAULT: "hsl(var(--navy))",
           foreground: "hsl(var(--navy-foreground))",
         },
+        violet: {
+          DEFAULT: "hsl(var(--violet))",
+          dark: "hsl(var(--violet-dark))",
+        },
+        rose: {
+          DEFAULT: "hsl(var(--rose))",
+        },
+        sky: {
+          DEFAULT: "hsl(var(--sky))",
+        },
+        emerald: {
+          DEFAULT: "hsl(var(--emerald))",
+        },
         gold: {
           DEFAULT: "hsl(var(--gold))",
           dark: "hsl(var(--gold-dark))",
         },
         forest: {
           DEFAULT: "hsl(var(--forest))",
-          light: "hsl(var(--forest-light))",
+          foreground: "hsl(var(--forest-foreground))",
         },
-        sage: "hsl(var(--sage))",
+        crimson: {
+          DEFAULT: "hsl(var(--crimson))",
+        },
         cream: "hsl(var(--cream))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -80,6 +96,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
       },
       keyframes: {
         "accordion-down": {
@@ -94,8 +111,10 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "slide-in-from-right": "slideInFromRight 0.5s ease-out",
+        "slide-in-from-left": "slideInFromLeft 0.5s ease-out",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

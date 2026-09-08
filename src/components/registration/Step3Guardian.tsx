@@ -4,7 +4,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { ASSISTANCE_AREAS } from '@/types/registration';
-import { User, Phone, Briefcase, Award, HandHeart, AlertCircle } from 'lucide-react';
 
 const Step3Guardian = () => {
   const { register, watch, setValue, formState: { errors } } = useFormContext();
@@ -27,12 +26,11 @@ const Step3Guardian = () => {
         <p className="text-muted-foreground mt-2">Parental approval is required for Pathfinder participation</p>
       </div>
 
-      <div className="flex gap-3 rounded-lg border border-accent bg-accent/10 p-4">
-        <AlertCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-        <div>
-          <p className="font-medium text-foreground">Important Notice</p>
-          <p className="text-sm text-muted-foreground">Pathfinder participation requires parental or guardian approval. The applicant must be at least 10 years old to join.</p>
-        </div>
+      <div className="rounded-lg border-l-4 border-l-primary border border-slate-200 bg-slate-50 p-4">
+        <p className="font-semibold text-slate-800 text-sm">Parental Consent Requirement</p>
+        <p className="text-sm text-slate-600 mt-0.5">
+          Pathfinder enrollment requires signed parental or legal guardian approval. The applicant must be at least 10 years old.
+        </p>
       </div>
 
       <div className="space-y-4 rounded-lg border border-border bg-card p-6">
@@ -40,8 +38,7 @@ const Step3Guardian = () => {
         
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="guardianName" className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
+            <Label htmlFor="guardianName" className="block text-sm font-medium text-foreground">
               Full Name <span className="text-destructive">*</span>
             </Label>
             <Input
@@ -56,7 +53,9 @@ const Step3Guardian = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="relationship">Relationship to Applicant <span className="text-destructive">*</span></Label>
+            <Label htmlFor="relationship" className="block text-sm font-medium text-foreground">
+              Relationship to Applicant <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="relationship"
               placeholder="e.g., Mother, Father, Guardian"
@@ -69,14 +68,13 @@ const Step3Guardian = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="guardianPhone" className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary" />
+            <Label htmlFor="guardianPhone" className="block text-sm font-medium text-foreground">
               Phone Number <span className="text-destructive">*</span>
             </Label>
             <Input
               id="guardianPhone"
               type="tel"
-              placeholder="(555) 123-4567"
+              placeholder="e.g. 024 123 4567"
               {...register('guardian.phone', { required: 'Phone number is required' })}
               className={guardianErrors.phone ? 'border-destructive' : ''}
             />
@@ -86,24 +84,22 @@ const Step3Guardian = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="occupation" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-primary" />
+            <Label htmlFor="occupation" className="block text-sm font-medium text-foreground">
               Occupation
             </Label>
             <Input id="occupation" placeholder="Your occupation" {...register('guardian.occupation')} />
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 p-4 rounded-lg bg-secondary/50 mt-4">
+        <div className="flex items-center space-x-3 p-4 rounded-lg border border-border bg-card mt-4">
           <Checkbox
             id="isMasterGuide"
             checked={watch('guardian.isMasterGuide')}
             onCheckedChange={(checked) => setValue('guardian.isMasterGuide', checked)}
           />
-          <div className="flex items-center gap-2">
-            <Award className="h-4 w-4 text-accent" />
-            <Label htmlFor="isMasterGuide" className="cursor-pointer">I am a Master Guide</Label>
-          </div>
+          <Label htmlFor="isMasterGuide" className="cursor-pointer font-medium">
+            I am a certified Master Guide
+          </Label>
         </div>
       </div>
 
@@ -117,8 +113,7 @@ const Step3Guardian = () => {
       </div>
 
       <div className="space-y-4 rounded-lg border border-border bg-card p-6">
-        <h3 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
-          <HandHeart className="h-5 w-5 text-primary" />
+        <h3 className="font-heading text-lg font-semibold text-foreground">
           Areas of Assistance
         </h3>
         <p className="text-sm text-muted-foreground">Select areas where you would be willing to help:</p>

@@ -8,9 +8,8 @@ import Step1PersonalInfo from './Step1PersonalInfo';
 import Step2Membership from './Step2Membership';
 import Step3Guardian from './Step3Guardian';
 import Step4Consent from './Step4Consent';
-import { saveRegistration, generateId, calculateAge } from '@/lib/storage';
+import { saveRegistration, calculateAge } from '@/lib/registrations';
 import { Registration } from '@/types/registration';
-import { ArrowLeft, ArrowRight, Send, Loader2 } from 'lucide-react';
 
 const steps = [
   { number: 1, title: 'Personal Info', description: 'Applicant details' },
@@ -38,6 +37,7 @@ const RegistrationForm = () => {
         preferredClubName: '',
         profileImage: '',
         schoolType: '',
+        ghanaCardImage: '',
       },
       membership: {
         confirmJoining: false,
@@ -48,6 +48,8 @@ const RegistrationForm = () => {
         honorsEarned: '',
         hasFullDressUniform: false,
         hasFullFieldUniform: false,
+        membershipCategory: '',
+        certificateImage: '',
       },
       guardian: {
         fullName: '',
@@ -75,10 +77,15 @@ const RegistrationForm = () => {
     switch (step) {
       case 1: {
         const { applicant } = values;
+        const membershipCategory = values.membership.membershipCategory;
         if (!applicant.fullName || !applicant.phone || !applicant.address ||
           !applicant.school || !applicant.grade || !applicant.dateOfBirth ||
           !applicant.church || !applicant.preferredClubName || !applicant.schoolType) {
           toast.error('Please fill in all required fields');
+          return false;
+        }
+        if (!applicant.profileImage || applicant.profileImage.trim() === '') {
+          toast.error('Passport photo is mandatory. Please upload or take a picture.');
           return false;
         }
         const age = calculateAge(applicant.dateOfBirth);
@@ -86,13 +93,33 @@ const RegistrationForm = () => {
           toast.error('Applicant must be at least 10 years old');
           return false;
         }
+        // Validate Ghana Card for Senior Youth and Master Guide
+        const isSeniorOrMG = membershipCategory === 'Senior Youth' || membershipCategory === 'Master Guide';
+        if (isSeniorOrMG && !applicant.ghanaCardImage) {
+          toast.error('Ghana Card image is required for ' + membershipCategory + ' members');
+          return false;
+        }
         return true;
       }
 
       case 2: {
         const { membership } = values;
+        if (!membership.membershipCategory) {
+          toast.error('Please select a membership category');
+          return false;
+        }
+        if (!membership.completedClasses || membership.completedClasses.length === 0) {
+          toast.error('Please select your Pathfinder progressive class');
+          return false;
+        }
         if (!membership.confirmJoining || !membership.agreesToParticipate) {
           toast.error('Please confirm your commitment to join the Pathfinder Club');
+          return false;
+        }
+        // Validate certificate for Senior Youth and Master Guide
+        const isSeniorOrMG = membership.membershipCategory === 'Senior Youth' || membership.membershipCategory === 'Master Guide';
+        if (isSeniorOrMG && !membership.certificateImage) {
+          toast.error(membership.membershipCategory + ' certificate is required');
           return false;
         }
         return true;
@@ -149,7 +176,7 @@ const RegistrationForm = () => {
     try {
       const values = methods.getValues();
       const registration: Registration = {
-        id: generateId(),
+        id: '',
         applicant: {
           ...values.applicant,
           age: calculateAge(values.applicant.dateOfBirth),
@@ -164,15 +191,22 @@ const RegistrationForm = () => {
         submittedAt: new Date().toISOString(),
       };
 
-      saveRegistration(registration);
-
+      const saved = await saveRegistration(registration);
       toast.success('Application submitted successfully!', {
         description: 'You will be contacted regarding your application status.',
       });
 
-      navigate('/registration-success');
+      navigate('/registration-success', {
+        state: {
+          registrationId: saved.id,
+          fullName: saved.applicant.fullName,
+          membershipCategory: saved.membership.membershipCategory,
+        },
+      });
     } catch (error) {
-      toast.error('Failed to submit application. Please try again.');
+      console.error('Application submission error:', error);
+      const message = error instanceof Error ? error.message : 'Failed to submit application. Please try again.';
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -183,7 +217,7 @@ const RegistrationForm = () => {
       <div className="w-full max-w-4xl mx-auto">
         <ProgressIndicator steps={steps} currentStep={currentStep} />
 
-        <div className="rounded-xl border border-border bg-card shadow-card p-6 md:p-8">
+        <div className="pt-4">
           <div key={currentStep} className="animate-in fade-in slide-in-from-right-8 duration-500 fill-mode-both">
             {currentStep === 1 && <Step1PersonalInfo />}
             {currentStep === 2 && <Step2Membership />}
@@ -191,39 +225,35 @@ const RegistrationForm = () => {
             {currentStep === 4 && <Step4Consent />}
           </div>
 
-          <div className="flex justify-between mt-8 pt-6 border-t border-border">
+          <div className="flex justify-between mt-8 pt-6 border-t border-slate-200">
             <Button
               type="button"
               variant="outline"
               onClick={handlePrevious}
               disabled={currentStep === 1}
+              className="text-xs font-semibold text-slate-700 border-slate-300 hover:bg-slate-50"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Previous
+              ← Previous
             </Button>
 
             {currentStep < 4 ? (
-              <Button type="button" onClick={handleNext}>
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
+              <Button type="button" onClick={handleNext} className="text-xs font-semibold bg-primary hover:bg-primary/90 text-white shadow-xs">
+                Next Step →
               </Button>
             ) : (
               <Button
                 type="button"
-                variant="hero"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
+                className="bg-primary hover:bg-primary/90 text-white text-xs font-bold px-6 shadow-xs"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Submitting...
+                    <span className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin mr-2 inline-block" />
+                    Submitting Application...
                   </>
                 ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Submit Application
-                  </>
+                  'Submit Application →'
                 )}
               </Button>
             )}

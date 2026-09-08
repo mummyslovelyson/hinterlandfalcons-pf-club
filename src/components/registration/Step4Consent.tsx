@@ -3,7 +3,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import SignaturePad from './SignaturePad';
 import { Input } from '@/components/ui/input';
-import { ShieldCheck, FileCheck, Calendar } from 'lucide-react';
 import { useEffect } from 'react';
 
 const Step4Consent = () => {
@@ -21,13 +20,12 @@ const Step4Consent = () => {
       </div>
 
       <div className="space-y-4 rounded-lg border border-border bg-card p-6">
-        <h3 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-primary" />
+        <h3 className="font-heading text-lg font-semibold text-foreground">
           Acknowledgement & Waiver
         </h3>
         
-        <div className="space-y-4 mt-4">
-          <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
+        <div className="space-y-3 mt-4">
+          <div className="flex items-start space-x-3 p-4 rounded-lg border border-border bg-card">
             <Checkbox
               id="acknowledgesResponsibility"
               checked={watch('consent.acknowledgesResponsibility')}
@@ -43,7 +41,7 @@ const Step4Consent = () => {
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
+          <div className="flex items-start space-x-3 p-4 rounded-lg border border-border bg-card">
             <Checkbox
               id="waivesClaims"
               checked={watch('consent.waivesClaims')}
@@ -59,7 +57,7 @@ const Step4Consent = () => {
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-4 rounded-lg bg-secondary/30">
+          <div className="flex items-start space-x-3 p-4 rounded-lg border border-border bg-card">
             <Checkbox
               id="agreesToCooperate"
               checked={watch('consent.agreesToCooperate')}
@@ -78,8 +76,7 @@ const Step4Consent = () => {
       </div>
 
       <div className="space-y-4 rounded-lg border border-border bg-card p-6">
-        <h3 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
-          <FileCheck className="h-5 w-5 text-primary" />
+        <h3 className="font-heading text-lg font-semibold text-foreground">
           Digital Signature
         </h3>
         <p className="text-sm text-muted-foreground">
@@ -107,8 +104,7 @@ const Step4Consent = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="signatureDate" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-primary" />
+              <Label htmlFor="signatureDate" className="block text-sm font-medium text-foreground">
                 Date
               </Label>
               <Input
@@ -116,23 +112,9 @@ const Step4Consent = () => {
                 type="date"
                 value={watch('consent.signatureDate') || new Date().toISOString().split('T')[0]}
                 readOnly
-                className="bg-muted"
+                className="bg-slate-100 text-slate-700 border-slate-200"
               />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-lg border-2 border-primary bg-primary/5 p-6">
-        <div className="flex gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <div>
-            <h4 className="font-heading font-semibold text-foreground">Ready to Submit</h4>
-            <p className="text-sm text-muted-foreground mt-1">
-              Please review all information before submitting. You will be contacted regarding your application status.
-            </p>
           </div>
         </div>
       </div>

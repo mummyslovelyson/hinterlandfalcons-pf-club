@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Eraser, Pen } from 'lucide-react';
 
 interface SignaturePadProps {
   value: string;
@@ -26,7 +25,7 @@ const SignaturePad = ({ value, onChange }: SignaturePadProps) => {
     ctx.scale(2, 2);
 
     // Set drawing styles
-    ctx.strokeStyle = '#1a4a3a';
+    ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -40,6 +39,7 @@ const SignaturePad = ({ value, onChange }: SignaturePadProps) => {
       };
       img.src = value;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getCoordinates = (e: React.MouseEvent | React.TouchEvent): { x: number; y: number } | null => {
@@ -115,7 +115,7 @@ const SignaturePad = ({ value, onChange }: SignaturePadProps) => {
 
   return (
     <div className="space-y-2">
-      <div className="relative rounded-lg border-2 border-dashed border-border bg-card overflow-hidden">
+      <div className="relative rounded-lg border-2 border-dashed border-slate-300 bg-white overflow-hidden">
         <canvas
           ref={canvasRef}
           className="w-full h-32 cursor-crosshair touch-none"
@@ -129,10 +129,7 @@ const SignaturePad = ({ value, onChange }: SignaturePadProps) => {
         />
         {isEmpty && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Pen className="h-4 w-4" />
-              <span className="text-sm">Sign here</span>
-            </div>
+            <span className="text-sm text-slate-400 font-medium">Draw signature here</span>
           </div>
         )}
       </div>
@@ -143,9 +140,9 @@ const SignaturePad = ({ value, onChange }: SignaturePadProps) => {
           size="sm"
           onClick={clearSignature}
           disabled={isEmpty}
+          className="text-xs text-slate-700 border-slate-300 hover:bg-slate-50"
         >
-          <Eraser className="h-4 w-4 mr-1" />
-          Clear
+          Clear Signature
         </Button>
       </div>
     </div>

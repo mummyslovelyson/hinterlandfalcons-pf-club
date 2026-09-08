@@ -4,23 +4,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- TODO: Set the document title to the name of your application -->
-  <title>Santasi SDA Pathfinder</title>
-  <meta name="description" content="Santasi SDA Pathfinder" />
-  <meta name="author" content="Santasi SDA Pathfinder" />
+  <link rel="icon" type="image/png" href="/falcons-logo.png" />
+  <title>Hinterland Falcons Pathfinder Club | Santasi AYM</title>
+  <meta name="description" content="Santasi Adventist Youth Ministries - Hinterland Falcons Pathfinder Club (Formed & Launched October 2023). We Are Smart and Vigilant in Service." />
+  <meta name="author" content="Santasi Adventist Youth Ministries" />
+  <meta name="theme-color" content="#22534f" />
 
-  <!-- TODO: Update og:title to match your application name -->
-  <meta property="og:title" content="Santasi SDA Pathfinder" />
-  <meta property="og:description" content="Santasi SDA Pathfinder" />
+  <meta property="og:title" content="Hinterland Falcons Pathfinder Club | Santasi AYM" />
+  <meta property="og:description" content="We Are Smart and Vigilant in Service. Official Membership & Uniform Portal." />
+  <meta property="og:image" content="/falcons-logo.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@SantasiSDAPathfinder" />
-  <meta name="twitter:image" content="" />
 </head>
 
-<body>
+<body class="bg-background text-foreground antialiased selection:bg-amber-100 selection:text-amber-900">
+  <!-- Standalone Logo Preloader -->
+  <div id="initial-preloader" style="position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 50%, #13332e 0%, #0a1c19 55%, #050d0c 100%);display:flex;align-items:center;justify-content:center;transition:opacity 0.45s ease-out, transform 0.45s ease-out;pointer-events:all;">
+    <style>
+      @keyframes initPulse {
+        0% { transform: scale(0.95); filter: drop-shadow(0 0 12px rgba(215, 166, 12, 0.25)); }
+        50% { transform: scale(1.05); filter: drop-shadow(0 0 28px rgba(215, 166, 12, 0.5)); }
+        100% { transform: scale(0.95); filter: drop-shadow(0 0 12px rgba(215, 166, 12, 0.25)); }
+      }
+      @keyframes initGlow {
+        0% { transform: scale(0.92); opacity: 0.35; }
+        50% { transform: scale(1.15); opacity: 0.75; }
+        100% { transform: scale(0.92); opacity: 0.35; }
+      }
+    </style>
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+      <div style="position:absolute;inset:-24px;border-radius:50%;background:radial-gradient(circle, rgba(215, 166, 12, 0.42) 0%, rgba(215, 166, 12, 0.12) 50%, transparent 75%);filter:blur(16px);animation:initGlow 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;pointer-events:none;"></div>
+      <div style="position:relative;width:128px;height:128px;border-radius:50%;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0, 0, 0, 0.7);padding:2px;animation:initPulse 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;">
+        <img src="/falcons-logo.png" alt="Hinterland Falcons" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;user-select:none;pointer-events:none;" />
+      </div>
+    </div>
+  </div>
+
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

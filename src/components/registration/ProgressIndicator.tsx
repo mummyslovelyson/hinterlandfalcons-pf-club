@@ -1,4 +1,3 @@
-import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Step {
@@ -24,14 +23,14 @@ const ProgressIndicator = ({ steps, currentStep }: ProgressIndicatorProps) => {
                 className={cn(
                   'flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-300',
                   currentStep > step.number
-                    ? 'border-primary bg-primary text-primary-foreground'
+                    ? 'border-2 border-primary bg-primary text-white font-bold shadow-xs'
                     : currentStep === step.number
-                    ? 'border-accent bg-accent text-accent-foreground shadow-elevated'
-                    : 'border-border bg-card text-muted-foreground'
+                    ? 'border-2 border-primary bg-white text-primary font-bold ring-4 ring-primary/10'
+                    : 'border-2 border-slate-200 bg-white text-slate-400 font-medium'
                 )}
               >
                 {currentStep > step.number ? (
-                  <Check className="h-6 w-6" />
+                  <span className="text-base font-bold">✓</span>
                 ) : (
                   <span className="font-heading font-bold">{step.number}</span>
                 )}
@@ -52,7 +51,7 @@ const ProgressIndicator = ({ steps, currentStep }: ProgressIndicatorProps) => {
               <div
                 className={cn(
                   'mx-4 h-1 w-24 rounded-full transition-all duration-300',
-                  currentStep > step.number ? 'bg-primary' : 'bg-border'
+                  currentStep > step.number ? 'bg-primary' : 'bg-slate-200'
                 )}
               />
             )}
@@ -70,7 +69,7 @@ const ProgressIndicator = ({ steps, currentStep }: ProgressIndicatorProps) => {
             {steps[currentStep - 1]?.title}
           </span>
         </div>
-        <div className="h-2 w-full rounded-full bg-border overflow-hidden">
+        <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
           <div
             className="h-full rounded-full bg-primary transition-all duration-500"
             style={{ width: `${(currentStep / steps.length) * 100}%` }}
