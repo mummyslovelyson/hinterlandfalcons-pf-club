@@ -1,5 +1,5 @@
 import { UniformRequest } from '@/types/uniform';
-import { api } from './api';
+import { api, ApiError } from './api';
 
 let cachedUniformRequests: UniformRequest[] = [];
 let hasFetchedUniforms = false;
@@ -21,10 +21,11 @@ export const syncUniformRequestsFromBackend = async (): Promise<UniformRequest[]
       }
       return data;
     }
-  } catch (err: any) {
-    if (err?.status !== 401) {
-      console.warn('Backend uniforms sync notice:', err);
+  } catch (err: unknown) {
+    if (err instanceof ApiError && err.status === 401) {
+      return cachedUniformRequests;
     }
+    console.warn('Backend uniforms sync notice:', err instanceof Error ? err.message : String(err));
   }
   return cachedUniformRequests;
 };

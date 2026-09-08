@@ -1,5 +1,5 @@
 import { Registration } from '@/types/registration';
-import { api } from './api';
+import { api, ApiError } from './api';
 
 let cachedRegistrations: Registration[] = [];
 let hasFetchedInitially = false;
@@ -22,10 +22,11 @@ export const syncRegistrationsFromBackend = async (): Promise<Registration[]> =>
       }
       return data;
     }
-  } catch (err: any) {
-    if (err?.status !== 401) {
-      console.warn('Backend registrations sync notice:', err);
+  } catch (err: unknown) {
+    if (err instanceof ApiError && err.status === 401) {
+      return cachedRegistrations;
     }
+    console.warn('Backend registrations sync notice:', err instanceof Error ? err.message : String(err));
   }
   return cachedRegistrations;
 };

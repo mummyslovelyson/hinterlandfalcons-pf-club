@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api, ApiError } from './api';
 
 export interface NotificationItem {
   id: string;
@@ -36,10 +36,11 @@ export const syncNotificationsFromBackend = async (): Promise<NotificationItem[]
       dispatchUpdate();
       return remote;
     }
-  } catch (err: any) {
-    if (err?.status !== 401) {
-      console.warn('[Notifications] Could not fetch remote notifications:', err?.message || err);
+  } catch (err: unknown) {
+    if (err instanceof ApiError && err.status === 401) {
+      return cachedNotifications;
     }
+    console.warn('[Notifications] Backend sync notice:', err instanceof Error ? err.message : String(err));
   }
   return cachedNotifications;
 };
@@ -73,62 +74,35 @@ export const addNotification = async (
     createdAt: new Date().toISOString(),
   };
 
-  try {
-    const saved = await api<NotificationItem>('/notifications', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-    cachedNotifications = [saved, ...cachedNotifications.filter(n => n.id !== saved.id)];
-    dispatchUpdate();
-    return saved;
-  } catch (err) {
-    console.warn('[Notifications] Fallback local push:', err);
-    cachedNotifications = [payload, ...cachedNotifications.filter(n => n.id !== payload.id)];
-    dispatchUpdate();
-    return payload;
-  }
+  const saved = await api<NotificationItem>('/notifications', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+  cachedNotifications = [saved, ...cachedNotifications.filter((n) => n.id !== saved.id)];
+  dispatchUpdate();
+  return saved;
 };
 
 export const markNotificationAsRead = async (id: string): Promise<void> => {
+  await api(`/notifications/${id}/read`, { method: 'PUT' });
   cachedNotifications = cachedNotifications.map((n) => (n.id === id ? { ...n, read: true } : n));
   dispatchUpdate();
-
-  try {
-    await api(`/notifications/${id}/read`, { method: 'PUT' });
-  } catch (err) {
-    console.warn('[Notifications] Backend read sync deferred:', err);
-  }
 };
 
 export const markAllNotificationsAsRead = async (): Promise<void> => {
+  await api('/notifications/read-all', { method: 'PUT' });
   cachedNotifications = cachedNotifications.map((n) => ({ ...n, read: true }));
   dispatchUpdate();
-
-  try {
-    await api('/notifications/read-all', { method: 'PUT' });
-  } catch (err) {
-    console.warn('[Notifications] Backend read-all sync deferred:', err);
-  }
 };
 
 export const deleteNotification = async (id: string): Promise<void> => {
+  await api(`/notifications/${id}`, { method: 'DELETE' });
   cachedNotifications = cachedNotifications.filter((n) => n.id !== id);
   dispatchUpdate();
-
-  try {
-    await api(`/notifications/${id}`, { method: 'DELETE' });
-  } catch (err) {
-    console.warn('[Notifications] Backend delete sync deferred:', err);
-  }
 };
 
 export const clearAllNotifications = async (): Promise<void> => {
+  await api('/notifications', { method: 'DELETE' });
   cachedNotifications = [];
   dispatchUpdate();
-
-  try {
-    await api('/notifications', { method: 'DELETE' });
-  } catch (err) {
-    console.warn('[Notifications] Backend clear sync deferred:', err);
-  }
 };
