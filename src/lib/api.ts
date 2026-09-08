@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? 'https://falcons-backend.onrender.com/api' : '/api');
 
 export class ApiError extends Error {
   status: number;
