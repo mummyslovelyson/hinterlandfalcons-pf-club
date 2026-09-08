@@ -7,6 +7,10 @@ let hasFetchedUniforms = false;
 export const UNIFORMS_SYNC_EVENT = 'pathfinder:uniforms_sync';
 
 export const syncUniformRequestsFromBackend = async (): Promise<UniformRequest[]> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('pf_auth_token') : null;
+  if (!token) {
+    return cachedUniformRequests;
+  }
   try {
     const data = await api<UniformRequest[]>('/uniforms');
     if (Array.isArray(data)) {
@@ -17,19 +21,17 @@ export const syncUniformRequestsFromBackend = async (): Promise<UniformRequest[]
       }
       return data;
     }
-  } catch (err) {
-    console.warn('Backend uniforms sync notice:', err);
+  } catch (err: any) {
+    if (err?.status !== 401) {
+      console.warn('Backend uniforms sync notice:', err);
+    }
   }
   return cachedUniformRequests;
 };
 
-// Auto-trigger sync on load in browser
-if (typeof window !== 'undefined' && !hasFetchedUniforms) {
-  syncUniformRequestsFromBackend();
-}
-
 export const getUniformRequests = (): UniformRequest[] => {
-  if (!hasFetchedUniforms && typeof window !== 'undefined') {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('pf_auth_token') : null;
+  if (!hasFetchedUniforms && typeof window !== 'undefined' && token) {
     syncUniformRequestsFromBackend();
   }
   return [...cachedUniformRequests];

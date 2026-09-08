@@ -8,6 +8,10 @@ let hasFetchedInitially = false;
 export const REGISTRATIONS_SYNC_EVENT = 'pathfinder:registrations_sync';
 
 export const syncRegistrationsFromBackend = async (): Promise<Registration[]> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('pf_auth_token') : null;
+  if (!token) {
+    return cachedRegistrations;
+  }
   try {
     const data = await api<Registration[]>('/registrations');
     if (Array.isArray(data)) {
@@ -18,19 +22,17 @@ export const syncRegistrationsFromBackend = async (): Promise<Registration[]> =>
       }
       return data;
     }
-  } catch (err) {
-    console.warn('Backend registrations sync notice:', err);
+  } catch (err: any) {
+    if (err?.status !== 401) {
+      console.warn('Backend registrations sync notice:', err);
+    }
   }
   return cachedRegistrations;
 };
 
-// Immediately trigger background sync if in browser
-if (typeof window !== 'undefined' && !hasFetchedInitially) {
-  syncRegistrationsFromBackend();
-}
-
 export const getRegistrations = (): Registration[] => {
-  if (!hasFetchedInitially && typeof window !== 'undefined') {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('pf_auth_token') : null;
+  if (!hasFetchedInitially && typeof window !== 'undefined' && token) {
     syncRegistrationsFromBackend();
   }
   return [...cachedRegistrations];

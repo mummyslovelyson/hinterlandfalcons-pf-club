@@ -24,6 +24,10 @@ const dispatchUpdate = () => {
 };
 
 export const syncNotificationsFromBackend = async (): Promise<NotificationItem[]> => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('pf_auth_token') : null;
+  if (!token) {
+    return cachedNotifications;
+  }
   try {
     const remote = await api<NotificationItem[]>('/notifications');
     if (Array.isArray(remote)) {
@@ -32,19 +36,17 @@ export const syncNotificationsFromBackend = async (): Promise<NotificationItem[]
       dispatchUpdate();
       return remote;
     }
-  } catch (err) {
-    console.warn('[Notifications] Could not fetch remote notifications:', (err as Error).message);
+  } catch (err: any) {
+    if (err?.status !== 401) {
+      console.warn('[Notifications] Could not fetch remote notifications:', err?.message || err);
+    }
   }
   return cachedNotifications;
 };
 
-// Initial background sync
-if (typeof window !== 'undefined' && !hasFetchedNotifications) {
-  syncNotificationsFromBackend();
-}
-
 export const getNotifications = (): NotificationItem[] => {
-  if (!hasFetchedNotifications && typeof window !== 'undefined') {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('pf_auth_token') : null;
+  if (!hasFetchedNotifications && typeof window !== 'undefined' && token) {
     syncNotificationsFromBackend();
   }
   return [...cachedNotifications];
