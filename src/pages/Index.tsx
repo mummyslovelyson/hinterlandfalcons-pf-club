@@ -444,14 +444,14 @@ const Index = () => {
                 <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-900 group">
                   <img
                     src="/vvvv.jpeg"
-                    alt="Director Kwabena Mensah in Master Guide Uniform"
+                    alt="Director MG Adu-Attah Samuel in Master Guide Uniform"
                     className="w-full h-auto object-cover object-top max-h-[480px] transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#071816] via-transparent to-transparent opacity-90" />
                   
                   <div className="absolute bottom-0 inset-x-0 p-5 text-white">
                     <h3 className="font-heading text-lg font-bold">
-                      Director Kwabena Mensah
+                      Director MG Adu-Attah Samuel
                     </h3>
                     <p className="text-xs text-slate-300 mt-0.5">
                       Club Director • Santasi District AYM Council
