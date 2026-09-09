@@ -14,8 +14,13 @@ import {
     User,
     Church,
     ShieldCheck,
+    Home,
+    Info,
+    Phone,
+    ArrowRight,
+    Sparkles,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     DropdownMenu,
@@ -42,12 +47,29 @@ const Header = () => {
         location.pathname.startsWith('/church') ||
         location.pathname.startsWith('/admin');
 
+    // Auto-close mobile menu when changing route
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [location.pathname]);
+
+    // Lock body scroll when mobile menu is open to prevent background bleed
+    useEffect(() => {
+        if (mobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [mobileMenuOpen]);
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-card/95 backdrop-blur-md supports-[backdrop-filter]:bg-card/85">
             <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary" />
             <div className="container flex h-16 items-center justify-between">
                 {/* Brand Logo & Title */}
-                <Link to="/" className="flex items-center gap-3 group">
+                <Link to="/" className="flex items-center gap-3 group shrink-0">
                     <div className="relative flex h-11 w-11 items-center justify-center rounded-full overflow-hidden border-2 border-amber-500/90 shadow-sm group-hover:shadow transition-all group-hover:scale-105 shrink-0 bg-primary">
                         <img
                             src="/falcons-logo.png"
@@ -57,11 +79,11 @@ const Header = () => {
                     </div>
                     <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
-                            <span className="font-heading text-base md:text-lg font-bold text-foreground tracking-tight">
+                            <span className="font-heading text-base md:text-lg font-bold text-foreground tracking-tight leading-tight">
                                 Hinterland Falcons
                             </span>
                         </div>
-                        <span className="text-[11px] text-muted-foreground font-medium">
+                        <span className="text-[11px] text-muted-foreground font-medium leading-tight">
                             Pathfinder Club
                         </span>
                     </div>
@@ -141,7 +163,7 @@ const Header = () => {
                             <DropdownMenuItem asChild>
                                 <a
                                     href="/#one-voice-27"
-                                    className="flex items-center justify-between p-2 rounded-lg bg-linear-to-r from-purple-950/20 to-indigo-950/20 border border-purple-500/30 hover:border-purple-500 cursor-pointer"
+                                    className="flex items-center justify-between p-2 rounded-lg bg-gradient-to-r from-purple-950/20 to-indigo-950/20 border border-purple-500/30 hover:border-purple-500 cursor-pointer"
                                 >
                                     <div className="flex items-center gap-2">
                                         <span className="h-2 w-2 rounded-full bg-purple-500 animate-pulse shrink-0" />
@@ -283,215 +305,403 @@ const Header = () => {
                     </Button>
                 </nav>
 
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="lg:hidden rounded-lg p-2 text-foreground hover:bg-secondary transition-colors"
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    aria-label="Toggle menu"
-                >
-                    {mobileMenuOpen ? (
-                        <X className="h-6 w-6" />
-                    ) : (
-                        <Menu className="h-6 w-6" />
-                    )}
-                </button>
+                {/* Mobile Right Controls: Quick Apply Button & Hamburger Toggle */}
+                <div className="flex items-center gap-2 lg:hidden">
+                    <Button
+                        asChild
+                        size="sm"
+                        className="h-8 rounded-full bg-primary hover:bg-primary/90 text-white font-semibold text-xs px-3 shadow-xs"
+                    >
+                        <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
+                            Apply
+                        </Link>
+                    </Button>
+                    <button
+                        className="rounded-lg p-2 text-foreground hover:bg-secondary active:scale-95 transition-all outline-none"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                        aria-expanded={mobileMenuOpen}
+                    >
+                        {mobileMenuOpen ? (
+                            <X className="h-5 w-5 text-foreground" />
+                        ) : (
+                            <Menu className="h-5 w-5 text-foreground" />
+                        )}
+                    </button>
+                </div>
             </div>
 
-            {/* Mobile Navigation Drawer */}
+            {/* Mobile Navigation Backdrop & Drawer */}
             <AnimatePresence>
                 {mobileMenuOpen && (
-                    <motion.div
-                        key="mobile-drawer"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                        className="border-t border-border bg-card/98 backdrop-blur-lg lg:hidden shadow-lg overflow-hidden"
-                    >
-                        <nav className="container flex flex-col gap-2 py-4 text-sm">
-                            {/* Top direct links */}
-                            <div className="grid grid-cols-3 gap-2 pb-2 border-b border-border/60">
-                                <Link
-                                    to="/"
-                                    className={cn(
-                                        'py-2 px-3 text-center text-xs font-semibold rounded-lg',
-                                        isActive('/') ? 'bg-primary/10 text-primary' : 'bg-secondary/70 text-foreground'
-                                    )}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Home
-                                </Link>
-                                <Link
-                                    to="/about"
-                                    className={cn(
-                                        'py-2 px-3 text-center text-xs font-semibold rounded-lg',
-                                        isActive('/about') ? 'bg-primary/10 text-primary' : 'bg-secondary/70 text-foreground'
-                                    )}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    About
-                                </Link>
-                                <Link
-                                    to="/contact"
-                                    className={cn(
-                                        'py-2 px-3 text-center text-xs font-semibold rounded-lg',
-                                        isActive('/contact') ? 'bg-primary/10 text-primary' : 'bg-secondary/70 text-foreground'
-                                    )}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Contact
-                                </Link>
-                            </div>
+                    <>
+                        {/* Backdrop overlay */}
+                        <motion.div
+                            key="mobile-backdrop"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="fixed inset-0 top-[65px] bg-black/45 backdrop-blur-[2px] z-40 lg:hidden"
+                        />
 
-                            {/* OneVoice27 Announcement Banner */}
-                            <a
-                                href="/#one-voice-27"
-                                className="px-3 py-2.5 text-xs font-bold text-amber-300 bg-linear-to-r from-purple-950 via-[#112c27] to-[#070b19] rounded-xl border border-purple-500/50 flex items-center justify-between"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <span className="h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
-                                    <span>OneVoice27: Mission For All</span>
+                        {/* Slide-down Drawer bounded to viewport */}
+                        <motion.div
+                            key="mobile-drawer"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                            className="fixed inset-x-0 top-[65px] z-50 max-h-[calc(100dvh-4.25rem)] flex flex-col border-b border-border bg-card/98 backdrop-blur-xl lg:hidden shadow-2xl overflow-hidden"
+                        >
+                            {/* Scrollable Navigation Body */}
+                            <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3 space-y-3">
+                                {/* Top direct links pill bar */}
+                                <div className="grid grid-cols-3 gap-1.5 p-1 bg-secondary/60 rounded-xl border border-border/70">
+                                    <Link
+                                        to="/"
+                                        className={cn(
+                                            'flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold rounded-lg transition-all',
+                                            isActive('/')
+                                                ? 'bg-card text-primary shadow-xs'
+                                                : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                                        )}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        <Home className="h-3.5 w-3.5" />
+                                        <span>Home</span>
+                                    </Link>
+                                    <Link
+                                        to="/about"
+                                        className={cn(
+                                            'flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold rounded-lg transition-all',
+                                            isActive('/about')
+                                                ? 'bg-card text-primary shadow-xs'
+                                                : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                                        )}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        <Info className="h-3.5 w-3.5" />
+                                        <span>About</span>
+                                    </Link>
+                                    <Link
+                                        to="/contact"
+                                        className={cn(
+                                            'flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold rounded-lg transition-all',
+                                            isActive('/contact')
+                                                ? 'bg-card text-primary shadow-xs'
+                                                : 'text-muted-foreground hover:text-foreground hover:bg-card/50'
+                                        )}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                    >
+                                        <Phone className="h-3.5 w-3.5" />
+                                        <span>Contact</span>
+                                    </Link>
                                 </div>
-                                <span className="text-[9px] font-black uppercase bg-purple-600 text-white px-2 py-0.5 rounded">
-                                    LAUNCH
-                                </span>
-                            </a>
 
-                            {/* Activities Collapsible */}
-                            <div className="rounded-xl border border-border/60 overflow-hidden bg-secondary/30">
-                                <button
-                                    onClick={() => setMobileActivitiesOpen(!mobileActivitiesOpen)}
-                                    className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-secondary/60"
+                                {/* OneVoice27 Global Launch Banner */}
+                                <a
+                                    href="/#one-voice-27"
+                                    className="px-3 py-2.5 text-xs font-bold text-amber-300 bg-gradient-to-r from-purple-950 via-[#112c27] to-[#070b19] rounded-xl border border-purple-500/40 flex items-center justify-between shadow-xs group"
+                                    onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    <span className="flex items-center gap-2">
-                                        <Calendar className="h-4 w-4 text-primary" />
-                                        Activities & Events
-                                    </span>
-                                    <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', mobileActivitiesOpen ? 'rotate-180' : '')} />
-                                </button>
-                                {mobileActivitiesOpen && (
-                                    <div className="px-3 pb-2.5 pt-1 space-y-1.5 border-t border-border/40 text-xs">
-                                        <Link
-                                            to="/events"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Events & Camps Calendar
-                                        </Link>
-                                        <a
-                                            href="/#gatherings"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Where & When We Gather
-                                        </a>
-                                        <Link
-                                            to="/blog"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Blog & Ministry Articles
-                                        </Link>
+                                    <div className="flex items-center gap-2">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500" />
+                                        </span>
+                                        <span className="text-white font-semibold">OneVoice27: Mission For All</span>
                                     </div>
-                                )}
+                                    <span className="text-[9px] font-black uppercase tracking-wider bg-purple-600 text-white px-2 py-0.5 rounded-full shadow-xs">
+                                        GLOBAL LAUNCH
+                                    </span>
+                                </a>
+
+                                {/* Accordion 1: Activities & Events */}
+                                <div className="rounded-xl border border-border/80 overflow-hidden bg-card shadow-2xs">
+                                    <button
+                                        onClick={() => setMobileActivitiesOpen(!mobileActivitiesOpen)}
+                                        className={cn(
+                                            'w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold tracking-tight text-foreground hover:bg-secondary/60 transition-colors',
+                                            mobileActivitiesOpen && 'bg-secondary/40 border-b border-border/50'
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                                                <Calendar className="h-3.5 w-3.5" />
+                                            </div>
+                                            <span className="font-semibold text-xs">Activities & Events</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-md font-medium">3</span>
+                                            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', mobileActivitiesOpen && 'rotate-180 text-primary')} />
+                                        </div>
+                                    </button>
+
+                                    {mobileActivitiesOpen && (
+                                        <div className="p-2 space-y-1 bg-secondary/15">
+                                            <Link
+                                                to="/events"
+                                                className={cn(
+                                                    'flex items-start gap-2.5 p-2 rounded-lg transition-colors',
+                                                    isActive('/events')
+                                                        ? 'bg-primary/10 text-primary font-semibold'
+                                                        : 'hover:bg-secondary/70 text-foreground'
+                                                )}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                                                    <Calendar className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Events & Camps</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Club rallies, campouts, and dates</span>
+                                                </div>
+                                            </Link>
+
+                                            <a
+                                                href="/#gatherings"
+                                                className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-secondary/70 text-foreground transition-colors"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 shrink-0 mt-0.5">
+                                                    <Clock className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Gathering Schedule</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Sunday drills & Sabbath AY society</span>
+                                                </div>
+                                            </a>
+
+                                            <Link
+                                                to="/blog"
+                                                className={cn(
+                                                    'flex items-start gap-2.5 p-2 rounded-lg transition-colors',
+                                                    isActive('/blog')
+                                                        ? 'bg-primary/10 text-primary font-semibold'
+                                                        : 'hover:bg-secondary/70 text-foreground'
+                                                )}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0 mt-0.5">
+                                                    <Newspaper className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Blog & Articles</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Youth ministry devotionals & news</span>
+                                                </div>
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Accordion 2: Services & Regalia */}
+                                <div className="rounded-xl border border-border/80 overflow-hidden bg-card shadow-2xs">
+                                    <button
+                                        onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                                        className={cn(
+                                            'w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold tracking-tight text-foreground hover:bg-secondary/60 transition-colors',
+                                            mobileServicesOpen && 'bg-secondary/40 border-b border-border/50'
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="h-6 w-6 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                                                <Shirt className="h-3.5 w-3.5" />
+                                            </div>
+                                            <span className="font-semibold text-xs">Services & Regalia</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-md font-medium">4</span>
+                                            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', mobileServicesOpen && 'rotate-180 text-primary')} />
+                                        </div>
+                                    </button>
+
+                                    {mobileServicesOpen && (
+                                        <div className="p-2 space-y-1 bg-secondary/15">
+                                            <Link
+                                                to="/uniform-request"
+                                                className={cn(
+                                                    'flex items-start gap-2.5 p-2 rounded-lg transition-colors',
+                                                    isActive('/uniform-request')
+                                                        ? 'bg-primary/10 text-primary font-semibold'
+                                                        : 'hover:bg-secondary/70 text-foreground'
+                                                )}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
+                                                    <Shirt className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Uniform & Regalia Orders</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Field fabrics, dress uniforms, scarves</span>
+                                                </div>
+                                            </Link>
+
+                                            <a
+                                                href="/#track-status"
+                                                className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-secondary/70 text-foreground transition-colors"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                                                    <Search className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Track Application</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Check status of your 2026 intake</span>
+                                                </div>
+                                            </a>
+
+                                            <a
+                                                href="/#classes"
+                                                className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-secondary/70 text-foreground transition-colors"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-slate-500/10 flex items-center justify-center text-slate-600 shrink-0 mt-0.5">
+                                                    <BookOpen className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Pathfinder Curriculum</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Friend to Master Guide requirements</span>
+                                                </div>
+                                            </a>
+
+                                            <a
+                                                href="/#pledge-law"
+                                                className="flex items-start gap-2.5 p-2 rounded-lg hover:bg-secondary/70 text-foreground transition-colors"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0 mt-0.5">
+                                                    <Award className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Pathfinder Pledge & Law</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Club creed, aim, and spiritual pillars</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Accordion 3: Access Portals */}
+                                <div className="rounded-xl border border-border/80 overflow-hidden bg-card shadow-2xs">
+                                    <button
+                                        onClick={() => setMobilePortalsOpen(!mobilePortalsOpen)}
+                                        className={cn(
+                                            'w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold tracking-tight text-foreground hover:bg-secondary/60 transition-colors',
+                                            mobilePortalsOpen && 'bg-secondary/40 border-b border-border/50'
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="h-6 w-6 rounded-md bg-amber-500/10 flex items-center justify-center text-amber-600">
+                                                <Church className="h-3.5 w-3.5" />
+                                            </div>
+                                            <span className="font-semibold text-xs">Access Portals</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded-md font-medium">3</span>
+                                            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform duration-200', mobilePortalsOpen && 'rotate-180 text-primary')} />
+                                        </div>
+                                    </button>
+
+                                    {mobilePortalsOpen && (
+                                        <div className="p-2 space-y-1 bg-secondary/15">
+                                            <Link
+                                                to="/portal"
+                                                className={cn(
+                                                    'flex items-start gap-2.5 p-2 rounded-lg transition-colors',
+                                                    isActive('/portal')
+                                                        ? 'bg-primary/10 text-primary font-semibold'
+                                                        : 'hover:bg-secondary/70 text-foreground'
+                                                )}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 mt-0.5">
+                                                    <User className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Member & Parent Portal</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Attendance, awards, and credentials</span>
+                                                </div>
+                                            </Link>
+
+                                            <Link
+                                                to="/church"
+                                                className={cn(
+                                                    'flex items-start gap-2.5 p-2 rounded-lg transition-colors',
+                                                    isActive('/church')
+                                                        ? 'bg-primary/10 text-primary font-semibold'
+                                                        : 'hover:bg-secondary/70 text-foreground'
+                                                )}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0 mt-0.5">
+                                                    <Church className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Church Leader Portal</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Congregation roster & youth intake</span>
+                                                </div>
+                                            </Link>
+
+                                            <Link
+                                                to="/admin"
+                                                className={cn(
+                                                    'flex items-start gap-2.5 p-2 rounded-lg transition-colors',
+                                                    isActive('/admin')
+                                                        ? 'bg-primary/10 text-primary font-semibold'
+                                                        : 'hover:bg-secondary/70 text-foreground'
+                                                )}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="h-7 w-7 rounded-lg bg-slate-500/10 flex items-center justify-center text-slate-700 shrink-0 mt-0.5">
+                                                    <ShieldCheck className="h-3.5 w-3.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-semibold text-xs block leading-tight">Executive Admin</span>
+                                                    <span className="text-[11px] text-muted-foreground leading-tight">Master club administration & reports</span>
+                                                </div>
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
-                            {/* Services Collapsible */}
-                            <div className="rounded-xl border border-border/60 overflow-hidden bg-secondary/30">
-                                <button
-                                    onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                                    className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-secondary/60"
+                            {/* Sticky Bottom Action Zone */}
+                            <div className="border-t border-border/80 bg-card/95 p-3.5 backdrop-blur-md shrink-0 shadow-lg space-y-2">
+                                <Button
+                                    asChild
+                                    size="default"
+                                    className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-sm shadow-md flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
                                 >
-                                    <span className="flex items-center gap-2">
-                                        <Shirt className="h-4 w-4 text-emerald-600" />
-                                        Services & Regalia
-                                    </span>
-                                    <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', mobileServicesOpen ? 'rotate-180' : '')} />
-                                </button>
-                                {mobileServicesOpen && (
-                                    <div className="px-3 pb-2.5 pt-1 space-y-1.5 border-t border-border/40 text-xs">
-                                        <Link
-                                            to="/uniform-request"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Uniform Orders & Regalia
-                                        </Link>
-                                        <a
-                                            href="/#track-status"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Track Application Status
-                                        </a>
-                                        <a
-                                            href="/#classes"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Curriculum Classes (Friend to Master Guide)
-                                        </a>
-                                        <a
-                                            href="/#pledge-law"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Pathfinder Pledge & 8 Laws
-                                        </a>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Portals Collapsible */}
-                            <div className="rounded-xl border border-border/60 overflow-hidden bg-secondary/30">
-                                <button
-                                    onClick={() => setMobilePortalsOpen(!mobilePortalsOpen)}
-                                    className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-secondary/60"
-                                >
-                                    <span className="flex items-center gap-2">
-                                        <Church className="h-4 w-4 text-amber-600" />
-                                        Access Portals
-                                    </span>
-                                    <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', mobilePortalsOpen ? 'rotate-180' : '')} />
-                                </button>
-                                {mobilePortalsOpen && (
-                                    <div className="px-3 pb-2.5 pt-1 space-y-1.5 border-t border-border/40 text-xs">
-                                        <Link
-                                            to="/portal"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Member & Parent Portal
-                                        </Link>
-                                        <Link
-                                            to="/church"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Church Leader Portal
-                                        </Link>
-                                        <Link
-                                            to="/admin"
-                                            className="block py-1.5 px-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            Executive Admin Portal
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Bottom CTA */}
-                            <div className="pt-2 border-t border-border mt-1">
-                                <Button asChild size="default" className="w-full rounded-lg bg-primary hover:bg-primary/90 text-white font-medium shadow-xs">
                                     <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                                        Apply for Membership (2026)
+                                        <Sparkles className="h-4 w-4 text-accent animate-pulse" />
+                                        <span>Apply for Membership (2026)</span>
+                                        <ArrowRight className="h-4 w-4 ml-auto" />
                                     </Link>
                                 </Button>
+
+                                <div className="grid grid-cols-2 gap-2 pt-0.5">
+                                    <Link
+                                        to="/portal"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg border border-border/70 bg-secondary/40 hover:bg-secondary text-[11px] font-semibold text-foreground transition-colors text-center"
+                                    >
+                                        <User className="h-3.5 w-3.5 text-primary" />
+                                        <span>Member Portal</span>
+                                    </Link>
+                                    <a
+                                        href="/#track-status"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg border border-border/70 bg-secondary/40 hover:bg-secondary text-[11px] font-semibold text-foreground transition-colors text-center"
+                                    >
+                                        <Search className="h-3.5 w-3.5 text-primary" />
+                                        <span>Track Status</span>
+                                    </a>
+                                </div>
                             </div>
-                        </nav>
-                    </motion.div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </header>
